@@ -1,0 +1,12 @@
+config:
+  - left_conn: ${LEFT_TABLE_URI}  # read from .env
+    right_conn: ${RIGHT_TABLE_URI}  # read from .env
+    left_table: "<left_table_name>"
+    right_table: "<right_table_name>"
+    left_where: "<COL_1 = 'value' and COL_2 = 'value'>"
+    right_where: "<COL_1 = 'value' and COL_2 = 'value'>"
+    keys:
+      - "<id_column>"
+    columns:
+      - "<first_additional_column_name>"
+      - "<second_additional_column_name>"
