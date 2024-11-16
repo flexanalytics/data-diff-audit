@@ -1,4 +1,3 @@
-
 config:
   - left_conn: ${OLD_SNOWFLAKE_AUDIT}
     right_conn: ${NEW_SNOWFLAKE_AUDIT}

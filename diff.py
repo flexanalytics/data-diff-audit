@@ -11,7 +11,8 @@ load_dotenv()
 
 SAVE_AS_FILE = "./diff_report.txt"
 
-def replace_env_vars_in_yaml(yaml_data):
+
+def replace_env_vars_in_yaml(yaml_data: dict | list | str) -> dict | list | str:
     if isinstance(yaml_data, dict):
         return {k: replace_env_vars_in_yaml(v) for k, v in yaml_data.items()}
     elif isinstance(yaml_data, list):
@@ -94,6 +95,7 @@ def generate_diff_report(
 
 def generate_diff_summary(data) -> str:
     summary = []
+    column_totals = {}
 
     for item in data:
         for key, changes in item.items():
@@ -115,9 +117,12 @@ def generate_diff_summary(data) -> str:
                 plus_dict = plus_dicts[identifier]
 
                 differences = []
-                for k in minus_dict.keys():
-                    if minus_dict[k] != plus_dict[k]:
-                        differences.append(f"{k}: -{minus_dict[k]} +{plus_dict[k]}")
+                for col_name in minus_dict.keys():
+                    if minus_dict[col_name] != plus_dict[col_name]:
+                        differences.append(
+                            f"{col_name}: -{minus_dict[col_name]} +{plus_dict[col_name]}",
+                        )
+                        column_totals[col_name] = column_totals.get(col_name, 0) + 1
 
                 if differences:
                     identifier_key, identifier_value = identifier
@@ -131,18 +136,33 @@ def generate_diff_summary(data) -> str:
                 summary.append(
                     f"{identifier_key} {identifier_value} removed from {key}: "
                     + ", ".join(
-                        f"{k}: {v}" for k, v in minus_dicts[identifier].items()
+                        f"{col_name}: {value}"
+                        for col_name, value in minus_dicts[identifier].items()
                     ),
                 )
+                for col_name in minus_dicts[identifier].keys():
+                    column_totals[col_name] = column_totals.get(col_name, 0) + 1
 
             for identifier in only_in_plus:
                 identifier_key, identifier_value = identifier
                 summary.append(
                     f"{identifier_key} {identifier_value} added to {key}: "
-                    + ", ".join(f"{k}: {v}" for k, v in plus_dicts[identifier].items()),
+                    + ", ".join(
+                        f"{col_name}: {value}"
+                        for col_name, value in plus_dicts[identifier].items()
+                    ),
                 )
+                for col_name in plus_dicts[identifier].keys():
+                    column_totals[col_name] = column_totals.get(col_name, 0) + 1
 
-    return "\n".join(summary)
+    # Generate the summary header
+    summary_header = "Summary of differences by column:\n"
+    summary_header += "\n".join(
+        f"{col_name}: {count}" for col_name, count in column_totals.items()
+    )
+    summary_header += "\n\nDetailed report:\n"
+
+    return summary_header + "\n".join(summary)
 
 
 def main() -> int:
