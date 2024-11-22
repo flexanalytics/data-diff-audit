@@ -23,9 +23,10 @@ source venv/bin/activate  #(or source venv/Scripts/activate on Windows)
    - the key column shared between the tables
    - any where clauses to properly filter the tables
    - the additional columns to compare
-   > [!NOTE]
-   > Excluding additional columns in the config will currently only check if the key column is found in both tables, but not if there are different values in any columns between the two tables for each key.
-   > To compare column values you must add additional columns to the config in the `columns` entry, and their names must match across both tables.
+
+> [!NOTE]
+> Excluding additional columns in the config will currently only check if the key column is found in both tables, but not if there are different values in any columns between the two tables for each key.
+> To compare column values you must add additional columns to the config in the `columns` entry, and their names must match across both tables.
 
 ### Run the tool
 
